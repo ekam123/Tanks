@@ -132,7 +132,7 @@ void AVehicle::Reverse(float Value) {
 
 void AVehicle::MoveForward(float Value)
 {
-	//UE_LOG(LogTemp, Display, TEXT("[DISTANCETEST] MOVEFORWARD VALUE: %f"), Value);
+	UE_LOG(LogTemp, Display, TEXT("[DISTANCETEST] MOVEFORWARD VALUE: %f"), Value);
 	if (HasReachedDistanceLimit) {
 		Value = 0.0;
 		VehicleMovementComponent->SetHandbrakeInput(true); 
@@ -307,10 +307,13 @@ void AVehicle::SetPlayerDetails(FPlayerDetails TankDetail)
 void AVehicle::Fire(int ProjectileType)
 {
 	UE_LOG(LogTemp, Display, TEXT("[PROJECTILE] TESTING WHEN THIS IS CALLED!!!! %d"), ProjectileType);
+	FActorSpawnParameters SpawnParameters = FActorSpawnParameters(); 
+	SpawnParameters.Instigator = this; 
+	SpawnParameters.Owner = this;
 	if (ProjectileType == 1)
 	{
-		auto Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
-		Projectile->SetOwner(this);
+		auto Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation(), SpawnParameters);
+		//Projectile->SetOwner(this);
 		Projectile->UpdateProjectileSpeed(Range);
 	}
 	else if (ProjectileType == 2)

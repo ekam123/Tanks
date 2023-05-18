@@ -33,7 +33,7 @@ AProjectile::AProjectile()
 	ParticleSmoke = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ParticleSmoke"));
 	ParticleSmoke->SetupAttachment(RootComponent); 
 
-	//UE_LOG(LogTemp, Warning, TEXT("[PROJECTILE] Cannon/Projectile/Missile Initialized!!!"));
+	//UE_LOG(LogTemp, Warning, TEXT("[PROJECTILE] Cannon/Projectile/Missile Initialized!!! %s"), *GetOwner()->GetClass()->GetName());
 }
 
 // Called when the game starts or when spawned
@@ -68,9 +68,10 @@ void AProjectile::onHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	}
 	auto MyOwnerInstigator = MyOwner->GetInstigatorController();
 	auto DamageTypeClass = UDamageType::StaticClass();
-
-	if (OtherActor && OtherActor!= this && OtherActor != MyOwner)
+	UE_LOG(LogTemp, Warning, TEXT("[PROJECTILE] Other actor is %d %d"), OtherActor != this, OtherActor != MyOwner);
+	if (OtherActor && OtherActor != this && OtherActor != MyOwner) //&& OtherActor!= this && OtherActor != MyOwner
 	{
+		UE_LOG(LogTemp, Warning, TEXT("[PROJECTILE] Inside the statement..."));
 		UE_LOG(LogTemp, Warning, TEXT("[PROJECTILE] Inside judgement day!!! %d"), this->GetClass()->IsChildOf(ACannonMissile::StaticClass()));
 	/*	if (MyOwner->GetClass()->IsChildOf(ATower::StaticClass()))
 		{
@@ -83,7 +84,6 @@ void AProjectile::onHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		AVehicle* InstigatorTank = Cast<AVehicle>(MyOwner);
 		if (this->GetClass()->IsChildOf(ACannonMissile::StaticClass()) && OtherActor->ActorHasTag("Floor"))
 		{
-			
 			
 			FVector CurrentLocation = this->GetActorLocation();
 			if (StartLocation.IsZero())
@@ -167,7 +167,7 @@ void AProjectile::onHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 		}
 
 	}
-	UE_LOG(LogTemp, Warning, TEXT("[PROJECTILE] Inside judgement day!!!"));
+	UE_LOG(LogTemp, Warning, TEXT("[PROJECTILE] End of OnHit!!!"));
 
 }
 

@@ -32,7 +32,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 private:
-	UPROPERTY(EditAnywhere, Category = "Combat")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 		UStaticMeshComponent* ProjectileMeshComp;
 	UPROPERTY(EditAnywhere, Category = "Combat")
 		float testThis = 0.f;
