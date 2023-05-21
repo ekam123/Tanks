@@ -78,7 +78,8 @@ void AVehicle::BeginPlay()
 	WeaponsSystemComponent = Cast<UWeaponsSystemComponent>(ActorComponent);
 	//Material'/Game/Vehicles/VH_Buggy/Materials/M_Buggy_A.M_Buggy_A'
 	//SkeletalMesh'/Game/Vehicles/VH_Buggy/Mesh/SK_Buggy_Vehicle.SK_Buggy_Vehicle'
-
+	InitialRotation = TurretMesh->GetRelativeRotation(); 
+	UE_LOG(LogTemp, Display, TEXT("[TURRRETTEST] Turret Relative Location is: %s and location %s and rotation: %s %s"), *TurretMesh->GetRelativeLocation().ToString(), *TurretMesh->GetComponentLocation().ToString(),  *TurretMesh->GetComponentRotation().ToString(), *TurretMesh->GetRelativeRotation().ToString());
 }
 
 // Called every frame
@@ -87,7 +88,7 @@ void AVehicle::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//UE_LOG(LogTemp, Display, TEXT("[TANKMOVEMENTTEST] Inside TIck...."),)
-	if (DistanceTravelled <= TotalAllowedDistance)
+	if (!HasReachedDistanceLimit && (isMovingBack || isMovingForw))
 	{
 		FVector CurrentLocation = this->GetActorLocation();
 		//UE_LOG(LogTemp, Display, TEXT("[DISTANCETEST] Current Location: %s PreviousLocation: %s"), *CurrentLocation.ToString(), *PreviousLocation.ToString());
@@ -96,12 +97,12 @@ void AVehicle::Tick(float DeltaTime)
 		DistanceTravelled += Distance; 
 		//UE_LOG(LogTemp, Display, TEXT("[DISTANCETEST] Distance travelled: %f"), DistanceTravelled);
 		PreviousLocation = CurrentLocation;
+		if (DistanceTravelled >= TotalAllowedDistance) {
+			HasReachedDistanceLimit = true;
+		}
 	}
-	else
-	{
-		HasReachedDistanceLimit = true;
-		//UE_LOG(LogTemp, Display, TEXT("[DISTANCETEST] Has REachedDistanceLimit"));
-	}
+	UE_LOG(LogTemp, Display, TEXT("[TURRRETTEST] Turret Relative Location is: %s and location %s and rotation: %s %s"), *TurretMesh->GetRelativeLocation().ToString(), *TurretMesh->GetComponentLocation().ToString(), *TurretMesh->GetComponentRotation().ToString(), *TurretMesh->GetRelativeRotation().ToString());
+
 }
 
 // Called to bind functionality to input
@@ -123,6 +124,15 @@ void AVehicle::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 }
 
 void AVehicle::Reverse(float Value) {
+
+	if (static_cast<int>(Value) == 1) {
+		isMovingBack = true;
+		//UE_LOG(LogTemp, Display, TEXT("[DISTANCETEST] MOVEBackward VALUE: %f"), Value);
+	}
+	else {
+		isMovingBack = false; 
+		VehicleMovementComponent->SetHandbrakeInput(true);
+	}
 	if (HasReachedDistanceLimit) {
 		Value = 0.0;
 		VehicleMovementComponent->SetHandbrakeInput(true);
@@ -132,7 +142,14 @@ void AVehicle::Reverse(float Value) {
 
 void AVehicle::MoveForward(float Value)
 {
-	UE_LOG(LogTemp, Display, TEXT("[DISTANCETEST] MOVEFORWARD VALUE: %f"), Value);
+	if (static_cast<int>(Value) == 1) {
+		//UE_LOG(LogTemp, Display, TEXT("[DISTANCETEST] MOVEFORWARD VALUE: %f"), Value);
+		isMovingForw = true;
+	}
+	else {
+		isMovingForw = false;
+		VehicleMovementComponent->SetHandbrakeInput(true);
+	}
 	if (HasReachedDistanceLimit) {
 		Value = 0.0;
 		VehicleMovementComponent->SetHandbrakeInput(true); 
@@ -153,6 +170,8 @@ void AVehicle::RaiseTurret(float Value)
 {
 	FRotator DeltaRotation = FRotator::ZeroRotator;
 	DeltaRotation.Pitch = Value * UGameplayStatics::GetWorldDeltaSeconds(this) * 10;
+	DeltaRotation.Yaw = InitialRotation.Yaw; 
+	DeltaRotation.Roll = InitialRotation.Roll; 
 	UE_LOG(LogTemp, Display, TEXT("[TESTING] Current change is: %f and Value is: %f and value is: %f, %d"), DeltaRotation.Pitch, Value, TurretMesh->GetComponentRotation().Pitch, TurretMesh->GetComponentRotation().Pitch == MaxPitch);
 	UE_LOG(LogTemp, Display, TEXT("[TESTING] BOOL TEST: %d %d %d %.25f"), TurretMesh->GetComponentRotation().Pitch > 10.000000, TurretMesh->GetComponentRotation().Pitch == 10.0, TurretMesh->GetComponentRotation().Pitch < 10.0, TurretMesh->GetComponentRotation().Pitch);
 	if (DeltaRotation.Pitch != 0 && floor(TurretMesh->GetComponentRotation().Pitch) <= MaxPitch && floor(TurretMesh->GetComponentRotation().Pitch) >= MinPitch)

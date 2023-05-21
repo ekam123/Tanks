@@ -19,15 +19,11 @@ class TOONTANKS_API AVehicle : public APawn
 public:
 	// Sets default values for this pawn's properties
 	//AVehicle();
-	void HandleDestruction();
-
-	void SetPlayerDetails(FPlayerDetails TankDetail);
-
-	APlayerController* GetTankPlayerController() const { return TankPlayerController; }
 
 	bool bAlive = true;
 	bool IsInTransition = false;
 	void FireWeaponChangeEvent();
+
 	UFUNCTION(BlueprintCallable, Category = Properties)
 		FString ReturnPlayerName();
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Battle")
@@ -44,6 +40,12 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void HandleDestruction();
+
+	void SetPlayerDetails(FPlayerDetails TankDetail);
+
+	APlayerController* GetTankPlayerController() const { return TankPlayerController; }
 
 private:
 	UPROPERTY(Category = Vehicle, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -74,6 +76,10 @@ private:
 	TArray<int> WeaponTypes;
 	FPlayerDetails TankDetails;
 	FVector PreviousLocation; 
+
+	FRotator InitialRotation; 
+	bool isMovingForw = false; 
+	bool isMovingBack = false; 
 
 private:
 	void MoveForward(float Value);
@@ -119,7 +125,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "Components")
 		TSubclassOf<class AProjectile> CracklingClass;
 
-	private: 
+private: 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 		USceneComponent* ProjectileSpawnPoint;
 
