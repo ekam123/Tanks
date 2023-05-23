@@ -71,6 +71,8 @@ void AVehicle::BeginPlay()
 {
 	Super::BeginPlay();
 
+	VehicleMovementComponent->SetHandbrakeInput(true);
+
 	PreviousLocation = this->GetActorLocation();
 	UE_LOG(LogTemp, Display, TEXT("[DISTANCETEST] Starting Location is: %s"), *PreviousLocation.ToString()); 
 
@@ -78,8 +80,10 @@ void AVehicle::BeginPlay()
 	WeaponsSystemComponent = Cast<UWeaponsSystemComponent>(ActorComponent);
 	//Material'/Game/Vehicles/VH_Buggy/Materials/M_Buggy_A.M_Buggy_A'
 	//SkeletalMesh'/Game/Vehicles/VH_Buggy/Mesh/SK_Buggy_Vehicle.SK_Buggy_Vehicle'
-	InitialRotation = TurretMesh->GetRelativeRotation(); 
-	UE_LOG(LogTemp, Display, TEXT("[TURRRETTEST] Turret Relative Location is: %s and location %s and rotation: %s %s"), *TurretMesh->GetRelativeLocation().ToString(), *TurretMesh->GetComponentLocation().ToString(),  *TurretMesh->GetComponentRotation().ToString(), *TurretMesh->GetRelativeRotation().ToString());
+	/*InitialRotation = TurretMesh->GetRelativeRotation(); */
+	//FRotator TestRot = TurretMesh->GetComponentRotation(); 
+	//UE_LOG(LogTemp, Display, TEXT("[TESTING] Turret Relative Location is: %s and location %s and rotation: %s %s"), *TurretMesh->GetRelativeLocation().ToString(), *TurretMesh->GetComponentLocation().ToString(),  *TurretMesh->GetComponentRotation().ToString(), *TurretMesh->GetRelativeRotation().ToString());
+	//UE_LOG(LogTemp, Display, TEXT("[TESTING]Turret Rotation Pitch: %f, Roll: %f, Yaw: %f"), TestRot.Pitch, TestRot.Roll, TestRot.Yaw);
 }
 
 // Called every frame
@@ -101,8 +105,8 @@ void AVehicle::Tick(float DeltaTime)
 			HasReachedDistanceLimit = true;
 		}
 	}
-	UE_LOG(LogTemp, Display, TEXT("[TURRRETTEST] Turret Relative Location is: %s and location %s and rotation: %s %s"), *TurretMesh->GetRelativeLocation().ToString(), *TurretMesh->GetComponentLocation().ToString(), *TurretMesh->GetComponentRotation().ToString(), *TurretMesh->GetRelativeRotation().ToString());
-
+	FRotator TestRot = TurretMesh->GetComponentRotation();
+	UE_LOG(LogTemp, Display, TEXT("[TESTINGTT]Turret Rotation Pitch: %f, Roll: %f, Yaw: %f"), TestRot.Pitch, TestRot.Roll, TestRot.Yaw);
 }
 
 // Called to bind functionality to input
@@ -128,6 +132,7 @@ void AVehicle::Reverse(float Value) {
 	if (static_cast<int>(Value) == 1) {
 		isMovingBack = true;
 		//UE_LOG(LogTemp, Display, TEXT("[DISTANCETEST] MOVEBackward VALUE: %f"), Value);
+		VehicleMovementComponent->SetHandbrakeInput(false);
 	}
 	else {
 		isMovingBack = false; 
@@ -145,6 +150,7 @@ void AVehicle::MoveForward(float Value)
 	if (static_cast<int>(Value) == 1) {
 		//UE_LOG(LogTemp, Display, TEXT("[DISTANCETEST] MOVEFORWARD VALUE: %f"), Value);
 		isMovingForw = true;
+		VehicleMovementComponent->SetHandbrakeInput(false);
 	}
 	else {
 		isMovingForw = false;
@@ -170,14 +176,13 @@ void AVehicle::RaiseTurret(float Value)
 {
 	FRotator DeltaRotation = FRotator::ZeroRotator;
 	DeltaRotation.Pitch = Value * UGameplayStatics::GetWorldDeltaSeconds(this) * 10;
-	DeltaRotation.Yaw = InitialRotation.Yaw; 
-	DeltaRotation.Roll = InitialRotation.Roll; 
+	//DeltaRotation.Yaw = InitialRotation.Yaw; 
+	//DeltaRotation.Roll = InitialRotation.Roll; 
 	UE_LOG(LogTemp, Display, TEXT("[TESTING] Current change is: %f and Value is: %f and value is: %f, %d"), DeltaRotation.Pitch, Value, TurretMesh->GetComponentRotation().Pitch, TurretMesh->GetComponentRotation().Pitch == MaxPitch);
-	UE_LOG(LogTemp, Display, TEXT("[TESTING] BOOL TEST: %d %d %d %.25f"), TurretMesh->GetComponentRotation().Pitch > 10.000000, TurretMesh->GetComponentRotation().Pitch == 10.0, TurretMesh->GetComponentRotation().Pitch < 10.0, TurretMesh->GetComponentRotation().Pitch);
+	//UE_LOG(LogTemp, Display, TEXT("[TESTING] BOOL TEST: %d %d %d %.25f"), TurretMesh->GetComponentRotation().Pitch > 10.000000, TurretMesh->GetComponentRotation().Pitch == 10.0, TurretMesh->GetComponentRotation().Pitch < 10.0, TurretMesh->GetComponentRotation().Pitch);
 	if (DeltaRotation.Pitch != 0 && floor(TurretMesh->GetComponentRotation().Pitch) <= MaxPitch && floor(TurretMesh->GetComponentRotation().Pitch) >= MinPitch)
 	{
 		TurretMesh->AddLocalRotation(DeltaRotation);
-		TurretPitch = TurretMesh->GetComponentRotation().Pitch;
 		UE_LOG(LogTemp, Display, TEXT("[TESTING] Turret Pitch is: %f"), TurretPitch);
 
 		//TurretMesh->SetWorldRotation(DeltaRotation); //Why does this not work properly?
@@ -187,34 +192,53 @@ void AVehicle::RaiseTurret(float Value)
 
 			float ValueToAdjust = -(TurretMesh->GetComponentRotation().Pitch - MaxPitch);
 			UE_LOG(LogTemp, Display, TEXT("[TESTING] Value to adjust: %f"), ValueToAdjust);
-			TurretMesh->AddLocalRotation(FRotator(ValueToAdjust, 0.0f, 0.0f));
+			InitialRotation.Add(ValueToAdjust, 0.0f, 0.0f);
+			TurretMesh->AddLocalRotation(InitialRotation); //FRotator(ValueToAdjust, 0.0f, 0.0f)
 		}
 		if (TurretMesh->GetComponentRotation().Pitch < MinPitch)
 		{
 			float ValueToAdjust = -(TurretMesh->GetComponentRotation().Pitch - MinPitch);
 			UE_LOG(LogTemp, Display, TEXT("[TESTING] Value to adjust: %f"), ValueToAdjust);
-			TurretMesh->AddLocalRotation(FRotator(ValueToAdjust, 0.0f, 0.0f));
+			InitialRotation.Add(ValueToAdjust, 0.0f, 0.0f);
+			TurretMesh->AddLocalRotation(InitialRotation);
 		}
 		UE_LOG(LogTemp, Display, TEXT("[TESTING] Turret Pitch2 is: %f"), TurretMesh->GetComponentRotation().Pitch);
 	}
+	else if (DeltaRotation.Pitch == 0 && floor(TurretMesh->GetComponentRotation().Pitch) > MaxPitch ) {
+		UE_LOG(LogTemp, Display, TEXT("[TESTINGG] Pitch gone higher than maximum"));
+		InitialRotation.Add(MaxPitch, 0.0f, 0.0f);
+		TurretMesh->AddLocalRotation(InitialRotation);
+	}
+	else if (DeltaRotation.Pitch == 0  && floor(TurretMesh->GetComponentRotation().Pitch) < MinPitch) {
+		UE_LOG(LogTemp, Display, TEXT("[TESTINGG] Pitch gone lower than minimum"));
+		InitialRotation.Add(MinPitch, 0.0f, 0.0f);
+		TurretMesh->AddLocalRotation(InitialRotation);
+	}
+	//TurretMesh->AddLocalRotation(InitialRotation);
+	TurretPitch = TurretMesh->GetComponentRotation().Pitch;
 }
 
 void AVehicle::RotateTurretAlt(float Value)
 {
+	if (InitialRotation.IsZero()) {
+		InitialRotation = TurretMesh->GetComponentRotation();
+		UE_LOG(LogTemp, Display, TEXT("[TESTING] Initial ROtation SET: %f %f %f"), InitialRotation.Pitch, InitialRotation.Roll, InitialRotation.Yaw);
+	}
 	FHitResult HitResult;
 	UGameplayStatics::GetPlayerController(this, 0)->GetHitResultUnderCursor(ECollisionChannel::ECC_WorldStatic, false, HitResult);
 	DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10, 10, FColor::Red, false, -1);
 	float TankPitch = TurretMesh->GetComponentRotation().Pitch;//GetActorRotation().Pitch;
-	float TankRoll = TurretMesh->GetComponentRotation().Roll;
-	UE_LOG(LogTemp, Display, TEXT("[Testing] Turrent Rotation Pitch: %f Roll: %f"), TankPitch, TankRoll);
+	float TankRoll = InitialRotation.Roll;//TurretMesh->GetComponentRotation().Roll; 
+	UE_LOG(LogTemp, Display, TEXT("[Testing] Turrent Rotation Pitch: %f Roll: %f %f"), TankPitch, TankRoll, InitialRotation.Pitch);
 	FVector ToTarget = HitResult.ImpactPoint - TurretMesh->GetComponentLocation();
-	FRotator LookAtRotation = FRotator(TankPitch, ToTarget.Rotation().Yaw, TankRoll);
+	FRotator LookAtRotation = FRotator(TankPitch, ToTarget.Rotation().Yaw, 0.0);
 	FString PawnName = UGameplayStatics::GetPlayerController(this, 0)->GetPawn()->GetActorNameOrLabel();
 	//UE_LOG(LogTemp, Display, TEXT("[BasePawn RotateTankTurret] Turrent Mesh belongs to: %s %s and movement is: %s and distance is: %s"), *TurretMesh->GetOwner()->GetActorNameOrLabel(), *PawnName, *LookAtRotation.ToString(), *ToTarget.ToString());
 	if (UKismetMathLibrary::Abs(ToTarget.X) || UKismetMathLibrary::Abs(ToTarget.Y) >= 100)
 	{
 		TurretMesh->SetWorldRotation(FMath::RInterpTo(TurretMesh->GetComponentRotation(), LookAtRotation, UGameplayStatics::GetWorldDeltaSeconds(this), 20.f));
 	}
+	//UE_LOG(LogTemp, Display, TEXT("[TURRRETTEST] Turret Relative Location is: %s \t and rotation: %s"), *TurretMesh->GetRelativeLocation().ToString(), *TurretMesh->GetRelativeRotation().ToString()); 
 }
 
 void AVehicle::HandleDestruction()
