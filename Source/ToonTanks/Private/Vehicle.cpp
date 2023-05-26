@@ -178,43 +178,46 @@ void AVehicle::RaiseTurret(float Value)
 	DeltaRotation.Pitch = Value * UGameplayStatics::GetWorldDeltaSeconds(this) * 10;
 	//DeltaRotation.Yaw = InitialRotation.Yaw; 
 	//DeltaRotation.Roll = InitialRotation.Roll; 
+	float CurrentPitch = TurretMesh->GetComponentRotation().Pitch; 
 	UE_LOG(LogTemp, Display, TEXT("[TESTING] Current change is: %f and Value is: %f and value is: %f, %d"), DeltaRotation.Pitch, Value, TurretMesh->GetComponentRotation().Pitch, TurretMesh->GetComponentRotation().Pitch == MaxPitch);
 	//UE_LOG(LogTemp, Display, TEXT("[TESTING] BOOL TEST: %d %d %d %.25f"), TurretMesh->GetComponentRotation().Pitch > 10.000000, TurretMesh->GetComponentRotation().Pitch == 10.0, TurretMesh->GetComponentRotation().Pitch < 10.0, TurretMesh->GetComponentRotation().Pitch);
-	if (DeltaRotation.Pitch != 0 && floor(TurretMesh->GetComponentRotation().Pitch) <= MaxPitch && floor(TurretMesh->GetComponentRotation().Pitch) >= MinPitch)
+	if (DeltaRotation.Pitch != 0 && floor(CurrentPitch) <= MaxPitch && floor(CurrentPitch) >= MinPitch)
 	{
 		TurretMesh->AddLocalRotation(DeltaRotation);
 		UE_LOG(LogTemp, Display, TEXT("[TESTING] Turret Pitch is: %f"), TurretPitch);
 
 		//TurretMesh->SetWorldRotation(DeltaRotation); //Why does this not work properly?
 
-		if (TurretMesh->GetComponentRotation().Pitch > MaxPitch)
-		{
+		//if (TurretMesh->GetComponentRotation().Pitch > MaxPitch)
+		//{
 
-			float ValueToAdjust = -(TurretMesh->GetComponentRotation().Pitch - MaxPitch);
-			UE_LOG(LogTemp, Display, TEXT("[TESTING] Value to adjust: %f"), ValueToAdjust);
-			InitialRotation.Add(ValueToAdjust, 0.0f, 0.0f);
-			TurretMesh->AddLocalRotation(InitialRotation); //FRotator(ValueToAdjust, 0.0f, 0.0f)
-		}
-		if (TurretMesh->GetComponentRotation().Pitch < MinPitch)
-		{
-			float ValueToAdjust = -(TurretMesh->GetComponentRotation().Pitch - MinPitch);
-			UE_LOG(LogTemp, Display, TEXT("[TESTING] Value to adjust: %f"), ValueToAdjust);
-			InitialRotation.Add(ValueToAdjust, 0.0f, 0.0f);
-			TurretMesh->AddLocalRotation(InitialRotation);
-		}
-		UE_LOG(LogTemp, Display, TEXT("[TESTING] Turret Pitch2 is: %f"), TurretMesh->GetComponentRotation().Pitch);
+		//	float ValueToAdjust = -(TurretMesh->GetComponentRotation().Pitch - MaxPitch);
+		//	UE_LOG(LogTemp, Display, TEXT("[TESTING] Value to adjust: %f"), ValueToAdjust);
+		//	InitialRotation.Add(ValueToAdjust, 0.0f, 0.0f);
+		//	TurretMesh->AddLocalRotation(InitialRotation); //FRotator(ValueToAdjust, 0.0f, 0.0f)
+		//}
+		//if (TurretMesh->GetComponentRotation().Pitch < MinPitch)
+		//{
+		//	float ValueToAdjust = -(TurretMesh->GetComponentRotation().Pitch - MinPitch);
+		//	UE_LOG(LogTemp, Display, TEXT("[TESTING] Value to adjust: %f"), ValueToAdjust);
+		//	InitialRotation.Add(ValueToAdjust, 0.0f, 0.0f);
+		//	TurretMesh->AddLocalRotation(InitialRotation);
+		//}
+		UE_LOG(LogTemp, Display, TEXT("[TESTING] Turret Pitch2 is: %f"), CurrentPitch);
 	}
-	else if (DeltaRotation.Pitch == 0 && floor(TurretMesh->GetComponentRotation().Pitch) > MaxPitch ) {
+	else if (DeltaRotation.Pitch == 0 && CurrentPitch > MaxPitch ) {
 		UE_LOG(LogTemp, Display, TEXT("[TESTINGG] Pitch gone higher than maximum"));
 		InitialRotation.Add(MaxPitch, 0.0f, 0.0f);
-		TurretMesh->AddLocalRotation(InitialRotation);
+		TurretMesh->AddLocalRotation(FRotator(MaxPitch - CurrentPitch, 0.0f, 0.0f)); 
+		//TurretMesh->SetRelativeRotation(FRotator(MaxPitch, TurretMesh->GetComponentRotation().Yaw, TurretMesh->GetComponentRotation().Roll));
 	}
-	else if (DeltaRotation.Pitch == 0  && floor(TurretMesh->GetComponentRotation().Pitch) < MinPitch) {
+	else if (DeltaRotation.Pitch == 0 && CurrentPitch < MinPitch) {
 		UE_LOG(LogTemp, Display, TEXT("[TESTINGG] Pitch gone lower than minimum"));
 		InitialRotation.Add(MinPitch, 0.0f, 0.0f);
-		TurretMesh->AddLocalRotation(InitialRotation);
+		TurretMesh->AddLocalRotation(FRotator(MinPitch - CurrentPitch, 0.0f, 0.0f)); 
+		//TurretMesh->SetRelativeRotation(FRotator(MinPitch, TurretMesh->GetComponentRotation().Yaw, TurretMesh->GetComponentRotation().Roll));
+		//TurretMesh->AddLocalRotation(InitialRotation);
 	}
-	//TurretMesh->AddLocalRotation(InitialRotation);
 	TurretPitch = TurretMesh->GetComponentRotation().Pitch;
 }
 

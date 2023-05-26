@@ -21,7 +21,7 @@ enum Wind
 	Still
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_FourParams(FOnAirFlowChangedTwo, FVector, AirStrength, FVector, AirDirection, FString, AirDirectionString, FString, AirStrengthString);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnAirFlowChangedTwo, FVector, AirStrength, FVector, AirDirection, FString, AirDirectionString, FString, AirStrengthString, float, DirectionAngle);
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class TOONTANKS_API UWindComponent : public UActorComponent
 {
@@ -42,6 +42,7 @@ public:
 private:
 	float MinWind = 0.05;
 	float MaxWind = 0.5f;
+	float WindAngle = 0.0f; 
 
 	UPROPERTY(BlueprintAssignable)
 		FOnAirFlowChangedTwo OnAirFlowChanged;
