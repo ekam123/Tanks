@@ -43,7 +43,7 @@ void UWindComponent::HandleWind()
 	FString DirectionString = ReturnWindDirectionString(ReturnWindDirection(CurrentWindDirection));
 	UE_LOG(LogTemp, Display, TEXT("[WIND] Airflow is: %s and Direction is: %s"), *AirFlow.ToString(), *CurrentWindDirection.ToString());
 
-	OnAirFlowChanged.Broadcast(AirFlowScaled, CurrentWindDirection, DirectionString, CreateWindStrengthString());
+	OnAirFlowChanged.Broadcast(AirFlowScaled, CurrentWindDirection, DirectionString, CreateWindStrengthString(), WindAngle);
 
 }
 
@@ -59,30 +59,39 @@ FString UWindComponent::ReturnWindDirectionString(Wind WindFlow)
 	{
 	case North:
 		Result = "N";
+		WindAngle = 0.0f;
 		break;
 	case NorthEast:
 		Result = "NE";
+		WindAngle = 45.0f;
 		break;
 	case East:
 		Result = "E";
+		WindAngle = 90.0f;
 		break;
 	case SouthEast:
 		Result = "SE";
+		WindAngle = 135.0f;
 		break;
 	case South:
 		Result = "S";
+		WindAngle = 180.0f;
 		break;
 	case SouthWest:
 		Result = "SW";
+		WindAngle = 225.0f;
 		break;
 	case West:
 		Result = "W";
+		WindAngle = 270.0f;
 		break;
 	case NorthWest:
 		Result = "NW";
+		WindAngle = 315.0f;
 		break;
 	default:
 		Result = "No Wind";
+		WindAngle = 0.0f;
 		break;
 	}
 	return Result;
