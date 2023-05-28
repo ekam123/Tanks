@@ -197,7 +197,9 @@ FString UWindComponent::CreateWindStrengthString()
 
 	int X = AirFlowScaled.X;
 	int Y = AirFlowScaled.Y;
-	FString string = FString::Printf(TEXT("X: %d Y: %d"), X, Y);
+	float Magnitude = FVector(X, Y, 0).Size();
+	//FString string = FString::Printf(TEXT("X: %d Y: %d M: %f"), X, Y, Magnitude);
+	FString string = FString::Printf(TEXT("%d"), static_cast<int>(Magnitude));
 	return string;
 
 }
