@@ -26,7 +26,7 @@ void ACracklingMissile::onHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		UE_LOG(LogTemp, Warning, TEXT("[SCORE] CRACKLING MISSILE ON HIT... %s, Damage is: %f and the owner is: %s"), *this->GetName(), Damage, *MyOwner->GetActorNameOrLabel());
 		if (OtherActor)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("[SCORE] Instigator Tank: %s     OtherActor: %s   "), *InstigatorTank->GetActorNameOrLabel(), *OtherActor->GetActorNameOrLabel());
+			UE_LOG(LogTemp, Warning, TEXT("[SCORE] Instigator Tank: %s     OtherActor: %s   %s"), *InstigatorTank->GetActorNameOrLabel(), *OtherActor->GetActorNameOrLabel(), *Hit.ImpactPoint.ToString());
 		}
 
 		if (InstigatorTank && (Cast<AVehicle>(OtherActor) || Cast<ATower>(OtherActor)))

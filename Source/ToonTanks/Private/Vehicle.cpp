@@ -364,12 +364,12 @@ void AVehicle::Fire(int ProjectileType)
 	}
 	else if (ProjectileType == 2)
 	{
-		ACannonMissile* ProjectileTwo = GetWorld()->SpawnActor<ACannonMissile>(CannonClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+		ACannonMissile* ProjectileTwo = GetWorld()->SpawnActor<ACannonMissile>(CannonClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation(), SpawnParameters);
 		ProjectileTwo->SetOwner(this);
 	}
 	else if (ProjectileType == 3)
 	{
-		ARocketMissile* RocketMissile = GetWorld()->SpawnActor<ARocketMissile>(RocketClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+		ARocketMissile* RocketMissile = GetWorld()->SpawnActor<ARocketMissile>(RocketClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation(), SpawnParameters);
 		RocketMissile->SetOwner(this);
 	}
 	else

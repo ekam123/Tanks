@@ -24,7 +24,7 @@ void ARocketMissile::onHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 
 	if (OtherActor && OtherActor != this && OtherActor != MyOwner)
 	{
-
+		UE_LOG(LogTemp, Display, TEXT("[PROJECTILE] Inside ARocketMissile"));
 		AVehicle* InstigatorTank = Cast<AVehicle>(MyOwner);
 
 			//UGameplayStatics::ApplyDamage(OtherActor, Damage, MyOwnerInstigator, this, DamageTypeClass);
@@ -66,18 +66,20 @@ void ARocketMissile::onHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPr
 				FActorSpawnParameters SpawnParameters;
 				SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 				FRotator OppRotation = Hit.GetComponent()->GetComponentRotation();
+				//OppRotation.Yaw = -OppRotation.Yaw;
 				FRotator AltRotation = FRotator(0, 0, 0); 
-				ACracklingMissile* MiniMissile = GetWorld()->SpawnActor<ACracklingMissile>(InstigatorTank->CracklingClass, Hit.ImpactPoint, AltRotation, SpawnParameters);
+				UE_LOG(LogTemp, Display, TEXT("[PROJECTILECRACK] Generating mini missiiles...Rotation: %s, ImpactNormal: %s, ImpactPoint: %s"), *OppRotation.ToString(), *Hit.ImpactNormal.ToString(), *Hit.ImpactPoint.ToString());
+				ACracklingMissile* MiniMissile = GetWorld()->SpawnActor<ACracklingMissile>(InstigatorTank->CracklingClass, Hit.ImpactPoint, OppRotation, SpawnParameters);
 				if (MiniMissile)
 				{
 					MiniMissile->SetOwner(MyOwner);
-					UE_LOG(LogTemp, Warning, TEXT("[MINIMISSILE] Mini Missile Speed: %s %s"), *MiniMissile->GetVelocity().ToString(), *this->GetVelocity().ToString()); //Hit.GetComponent()->GetComponentLocation()
+					//UE_LOG(LogTemp, Warning, TEXT("[PROJECTILE] Mini Missile Speed: %s %s"), *MiniMissile->GetVelocity().ToString(), *this->GetVelocity().ToString()); //Hit.GetComponent()->GetComponentLocation()
 				}
 			}
 			FTimerDelegate TimerDelegate;
 			TimerDelegate.BindLambda([&]
 				{
-					UE_LOG(LogTemp, Warning, TEXT("[PLAYERSWITCH] This text will appear in the console 3 seconds after execution"));
+					UE_LOG(LogTemp, Warning, TEXT("[PROJECTILE] This text will appear in the console 3 seconds after execution"));
 					SwitchPlayer(); 
 				});
 			GetWorld()->GetTimerManager().SetTimer(SwitchPlayerTimerHandle, TimerDelegate, 3, false);
