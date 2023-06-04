@@ -94,6 +94,7 @@ void AVehicle::Tick(float DeltaTime)
 	//UE_LOG(LogTemp, Display, TEXT("[TANKMOVEMENTTEST] Inside TIck...."),)
 	if (!HasReachedDistanceLimit && (isMovingBack || isMovingForw))
 	{
+		VehicleMovementComponent->SetHandbrakeInput(false);
 		FVector CurrentLocation = this->GetActorLocation();
 		//UE_LOG(LogTemp, Display, TEXT("[DISTANCETEST] Current Location: %s PreviousLocation: %s"), *CurrentLocation.ToString(), *PreviousLocation.ToString());
 		float Distance = FMath::Abs(FVector::Dist(CurrentLocation, PreviousLocation)); 
@@ -104,6 +105,9 @@ void AVehicle::Tick(float DeltaTime)
 		if (DistanceTravelled >= TotalAllowedDistance) {
 			HasReachedDistanceLimit = true;
 		}
+	}
+	else {
+		VehicleMovementComponent->SetHandbrakeInput(true);
 	}
 	FRotator TestRot = TurretMesh->GetComponentRotation();
 	UE_LOG(LogTemp, Display, TEXT("[TESTINGTT]Turret Rotation Pitch: %f, Roll: %f, Yaw: %f"), TestRot.Pitch, TestRot.Roll, TestRot.Yaw);
@@ -132,11 +136,11 @@ void AVehicle::Reverse(float Value) {
 	if (static_cast<int>(Value) == 1) {
 		isMovingBack = true;
 		//UE_LOG(LogTemp, Display, TEXT("[DISTANCETEST] MOVEBackward VALUE: %f"), Value);
-		VehicleMovementComponent->SetHandbrakeInput(false);
+		//VehicleMovementComponent->SetHandbrakeInput(false);
 	}
 	else {
 		isMovingBack = false; 
-		VehicleMovementComponent->SetHandbrakeInput(true);
+		//VehicleMovementComponent->SetHandbrakeInput(true);
 	}
 	if (HasReachedDistanceLimit) {
 		Value = 0.0;
@@ -150,11 +154,11 @@ void AVehicle::MoveForward(float Value)
 	if (static_cast<int>(Value) == 1) {
 		//UE_LOG(LogTemp, Display, TEXT("[DISTANCETEST] MOVEFORWARD VALUE: %f"), Value);
 		isMovingForw = true;
-		VehicleMovementComponent->SetHandbrakeInput(false);
+		//VehicleMovementComponent->SetHandbrakeInput(false);
 	}
 	else {
 		isMovingForw = false;
-		VehicleMovementComponent->SetHandbrakeInput(true);
+		//VehicleMovementComponent->SetHandbrakeInput(true);
 	}
 	if (HasReachedDistanceLimit) {
 		Value = 0.0;
