@@ -23,7 +23,7 @@ void UMissileMovementComponent::TickComponent(float DeltaTime, enum ELevelTick T
 	if (GameModeRef)
 	{
 		GameModeRef->ReturnWindOffset(WindOffset, Direction, DeltaTime);
-		UE_LOG(LogTemp, Display, TEXT("[WIND] WindOffset is: %s"), *WindOffset.ToString()); 
+		UE_LOG(LogTemp, Display, TEXT("[WIND] WindOffset is: %s and Direction PRojectile: %s"), *WindOffset.ToString(), *Direction.ToString()); 
 		this->Velocity *= WindOffset;
 		UE_LOG(LogTemp, Display, TEXT("[VELOCITY] INSIDE TICK, VELOCITY: %s"), *this->Velocity.ToString()); 
 	}

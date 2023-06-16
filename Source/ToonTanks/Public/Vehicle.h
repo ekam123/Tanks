@@ -94,6 +94,9 @@ private:
 
 	void Fire(int ProjectileType = 0);
 
+	FString ReturnDirectionStringFromYaw(float Yaw);
+	
+
 public:
 	/** Name of the MeshComponent. Use this name if you want to prevent creation of the component (with ObjectInitializer.DoNotCreateDefaultSubobject). */
 	static FName VehicleMeshComponentName;
@@ -141,6 +144,9 @@ private:
 
 	UPROPERTY(BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 		float TurretPitch = 0.0f;
+
+	UPROPERTY(BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+		FString TurretDirection;
 
 	float MinPitch = -20.0f;
 	float MaxPitch = 20.0f;

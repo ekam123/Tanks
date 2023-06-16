@@ -37,8 +37,6 @@ void UWindComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 void UWindComponent::HandleWind()
 {
 	UE_LOG(LogTemp, Display, TEXT("[WIND] Inside HandleWind:"))
-	
-	GenerateWindStrength();
 	GenerateWindDirection();
 	FString DirectionString = ReturnWindDirectionString(ReturnWindDirection(CurrentWindDirection));
 	UE_LOG(LogTemp, Display, TEXT("[WIND] Airflow is: %s and Direction is: %s"), *AirFlow.ToString(), *CurrentWindDirection.ToString());
@@ -143,6 +141,12 @@ void UWindComponent::GenerateWindStrength()
 {
 	float X = FMath::RandRange(MinWind, MaxWind);
 	float Y = FMath::RandRange(MinWind, MaxWind);
+	if (CurrentWindDirection.X == 0) {
+		X = 0;
+	}
+	if (CurrentWindDirection.Y == 0) {
+		Y = 0; 
+	}
 	AirFlow = FVector(X, Y, 0);
 	//Scale up to 0 to 100 for User
 	float NewValueX = (((X - MinWind) * (100 - 0)) / (MaxWind - MinWind)) + 0;
@@ -157,6 +161,7 @@ void UWindComponent::GenerateWindDirection()
 	int RandomNumberZ = FMath::RandRange(-1, 1); //rand() % 10 + (-10);
 	UE_LOG(LogTemp, Display, TEXT("[WIND] Inside HandleWind: %d %d %d"), RandomNumberX, RandomNumberY, RandomNumberZ)
 	CurrentWindDirection = FVector(RandomNumberX, RandomNumberY, RandomNumberZ);
+	GenerateWindStrength();
 }
 
 void UWindComponent::CalculateWindOffset(FVector& Offset, FVector Direction, float DeltaTime)

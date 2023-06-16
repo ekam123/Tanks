@@ -109,8 +109,10 @@ void AVehicle::Tick(float DeltaTime)
 	else {
 		VehicleMovementComponent->SetHandbrakeInput(true);
 	}
-	FRotator TestRot = TurretMesh->GetComponentRotation();
-	UE_LOG(LogTemp, Display, TEXT("[TESTINGTT]Turret Rotation Pitch: %f, Roll: %f, Yaw: %f"), TestRot.Pitch, TestRot.Roll, TestRot.Yaw);
+
+	FRotator TurretD = TurretMesh->GetComponentRotation().GetNormalized();
+	TurretDirection = ReturnDirectionStringFromYaw(TurretD.Yaw);
+	//UE_LOG(LogTemp, Display, TEXT("[TURRETMOVEMENT] Turret Rotation Direction: %s"), *TurretD.ToString());
 }
 
 // Called to bind functionality to input
@@ -380,4 +382,33 @@ void AVehicle::Fire(int ProjectileType)
 	{
 		UE_LOG(LogTemp, Display, TEXT("[PROJECTILE] Nothing to fire here: %d"), ProjectileType);
 	}
+}
+
+FString AVehicle::ReturnDirectionStringFromYaw(float Yaw)
+{
+	if (Yaw >= -10 && Yaw <= 10) {
+		return "N";
+	} 
+	else if (Yaw > 10 && Yaw <= 80) {
+		return "NE";
+	}
+	else if (Yaw > 80 && Yaw <= 100) {
+		return "E";
+	}
+	else if (Yaw > 100 && Yaw <= 170) {
+		return "SE";
+	}
+	else if (Yaw > 170 || Yaw <= -170) {
+		return "S";
+	}
+	else if (Yaw > -170 && Yaw < -100) {
+		return "SW";
+	}
+	else if (Yaw >= -100 && Yaw <= 80) {
+		return "W";
+	}
+	else {
+		return "NW"; 
+	}
+	return FString();
 }
