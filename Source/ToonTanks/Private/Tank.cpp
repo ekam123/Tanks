@@ -45,6 +45,7 @@ void ATank::BeginPlay()
 
 	auto ActorComponent = this->GetComponentByClass(UWeaponsSystemComponent::StaticClass());
 	WeaponsSystemComponent = Cast<UWeaponsSystemComponent>(ActorComponent);
+	UE_LOG(LogTemp, Display, TEXT("[MULTI_TEST] BEginPlay"));
 }
 
 
@@ -201,14 +202,19 @@ void ATank::RotateThroughWeapons(float Value)
 void ATank::FireProjectile()
 {
 	/*ProjectileType = 2;*/
-	
+	UE_LOG(LogTemp, Display, TEXT("[MULTI_TEST] Inside Fire Projectile"));
 	if (!IsInTransition)
 	{
+		UE_LOG(LogTemp, Display, TEXT("[MULTI_TEST] ISInTransition is False"));
 		WeaponIndex = WeaponsSystemComponent->ReturnProjectileIndex(); 
 		UE_LOG(LogTemp, Display, TEXT("[PROJECTILE] Fire method being overridden, Projectile Type is: %d"), WeaponIndex);
 		Fire(WeaponIndex);
 		WeaponsSystemComponent->UpdateProjectileAmmoCount(WeaponIndex); 
-		IsInTransition = true; 
+		if (TankPlayerController) {
+			UE_LOG(LogTemp, Display, TEXT("[MULTI_TEST] Tank Player Controller, setting isInTransition to true"));
+			IsInTransition = true;
+		}
+		
 	}
 }
 
@@ -216,7 +222,7 @@ void ATank::Fire(int ProjectileType)
 {
 
 	Super::Fire(ProjectileType);
-	UE_LOG(LogTemp, Display, TEXT("[MOUSETEST] TESTING WHEN THIS IS CALLED!!!!"));
+	UE_LOG(LogTemp, Display, TEXT("[MULTI_TEST] Inside Fire Projectile"));
 	//UNCOMMENT AFTERS TESTING
 	//IsInTransition = true; 
 	//AToonTanksPlayerController* ToonTanksPlayerController = Cast<AToonTanksPlayerController>(UGameplayStatics::GetPlayerController(this, 0));

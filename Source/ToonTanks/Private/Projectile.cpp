@@ -17,6 +17,7 @@
 #include "CannonMissile.h"
 #include "WeaponsSystemComponent.h"
 #include "MissileMovementComponent.h"
+#include "ToonTanksGameMode.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -173,12 +174,15 @@ void AProjectile::onHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 
 void AProjectile::SwitchPlayer()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[PLAYERSWITCH] Inside switch player!!!"))
-	AToonTanksPlayerController* ToonTanksPlayerController = Cast<AToonTanksPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
-	ToonTanksPlayerController->SetPlayerEnabledState(false);
-	FTimerHandle PlayerEnableTimerHandle;
-	FTimerDelegate TimerDelegate = FTimerDelegate::CreateUObject(ToonTanksPlayerController, &AToonTanksPlayerController::ChangePlayer, false);
-	GetWorldTimerManager().SetTimer(PlayerEnableTimerHandle, TimerDelegate, 2.0f, false);
+	AToonTanksGameMode* GameMode = Cast<AToonTanksGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (GameMode) {
+		UE_LOG(LogTemp, Warning, TEXT("[PLAYERSWITCH] Inside switch player!!!"))
+		AToonTanksPlayerController* ToonTanksPlayerController = Cast<AToonTanksPlayerController>(UGameplayStatics::GetPlayerController(this, 0));
+		ToonTanksPlayerController->SetPlayerEnabledState(false);
+		FTimerHandle PlayerEnableTimerHandle;
+		FTimerDelegate TimerDelegate = FTimerDelegate::CreateUObject(ToonTanksPlayerController, &AToonTanksPlayerController::ChangePlayer, false);
+		GetWorldTimerManager().SetTimer(PlayerEnableTimerHandle, TimerDelegate, 2.0f, false);
+	}
 }
 
 void AProjectile::CreateProjectileTwo()

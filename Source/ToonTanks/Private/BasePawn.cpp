@@ -143,6 +143,7 @@ TSubclassOf<class AProjectile> ABasePawn::ReturnProjectile()
 
 void ABasePawn::Fire(int ProjectileType)
 {
+	UE_LOG(LogTemp, Display, TEXT("[MULTI_TEST] Inside Fire Projectile"));
 	UE_LOG(LogTemp, Display, TEXT("[PROJECTILE] Projectile Type inside BasePawn Fire Method is: %d, Range is %f"), ProjectileType, Range);
 	//DrawDebugSphere(GetWorld(), ProjectileSpawnPoint->GetComponentLocation(), 20, 50, FColor::Red, false, 3);
 	if (ProjectileType == 1)

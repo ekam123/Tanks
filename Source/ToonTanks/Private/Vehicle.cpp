@@ -71,6 +71,7 @@ void AVehicle::BeginPlay()
 {
 	Super::BeginPlay();
 
+	TankPlayerController = GetController<APlayerController>();
 	VehicleMovementComponent->SetHandbrakeInput(true);
 
 	PreviousLocation = this->GetActorLocation();
@@ -330,15 +331,21 @@ void AVehicle::RotateThroughWeapons(float Value)
 void AVehicle::FireProjectile()
 {
 	/*ProjectileType = 2;*/
+	UE_LOG(LogTemp, Display, TEXT("[MULTI_TEST] Inside Fire Projectile"));
 	UE_LOG(LogTemp, Display, TEXT("[PROJECTILE] Fire method being overridden, Projectile Type is"));
 	if (!IsInTransition)
 	{
-		UE_LOG(LogTemp, Display, TEXT("[PROJECTILE] IS not in transition"));
+		UE_LOG(LogTemp, Display, TEXT("[MULTI_TEST] Inside is in Transition"));
 		WeaponIndex = WeaponsSystemComponent->ReturnProjectileIndex();
 		UE_LOG(LogTemp, Display, TEXT("[PROJECTILE] Fire method being overridden, Projectile Type is: %d"), WeaponIndex);
 		Fire(WeaponIndex);
 		WeaponsSystemComponent->UpdateProjectileAmmoCount(WeaponIndex);
-		IsInTransition = true;
+		if (Cast<AToonTanksGameMode>(UGameplayStatics::GetGameMode(GetWorld()))) {
+			//TODO: Set this up in beginning so don't hve to call for it everytime
+			UE_LOG(LogTemp, Display, TEXT("[MULTI_TEST] setting isintransition to true"));
+			IsInTransition = true;
+		}
+		
 	}
 }
 
